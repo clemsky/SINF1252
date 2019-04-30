@@ -7,17 +7,21 @@
 
 #include "CircularLinkedList.h"
 
-typedef struct{
+typedef struct circularLinkedList{
   Node *head;
 } CircularLinkedList;
 
-typedef struct {
+typedef struct node{
   char* password;
   int n_vowels;
   int n_consonants;
-  Node *next;
-  Node *previous;
+  struct node *next;
+  struct node *previous;
 } Node;
+
+void create(CircularLinkedList* new){
+  new->head = NULL;
+}
 
 int add(CircularLinkedList *list, char* s){
 
