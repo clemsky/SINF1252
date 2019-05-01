@@ -5,11 +5,11 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "CircularLinkedList.h"
+#include "circularLinkedList.h"
 
 typedef struct circularLinkedList{
   Node *head;
-} CircularLinkedList;
+} circularLinkedList;
 
 typedef struct node{
   char* password;
@@ -19,11 +19,11 @@ typedef struct node{
   struct node *previous;
 } Node;
 
-void create(CircularLinkedList* new){
+void create(circularLinkedList* new){
   new->head = NULL;
 }
 
-int add(CircularLinkedList *list, char* s){
+int add(circularLinkedList *list, char* s){
 
   int i = 0;
   int vowels = 0;
@@ -65,7 +65,7 @@ int add(CircularLinkedList *list, char* s){
   return 0;
 }
 
-void remove(CircularLinkedList* list, Node* rmv){
+void remove(circularLinkedList* list, Node* rmv){
   if(rmv == list->head){
     if(rmv->next = rmv){
       free(rmv);
@@ -85,7 +85,7 @@ void remove(CircularLinkedList* list, Node* rmv){
   }
 }
 
-void printAll(CircularLinkedList* list){
+void printAll(circularLinkedList* list){
   while(list->head != NULL){
     printf("%s\n",list->head->password);
     remove(list, list->head);

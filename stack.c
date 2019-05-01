@@ -5,10 +5,12 @@
 #include <string.h>
 #include <stdbool.h>
 
+int* max_vowels = 0;
+int* max_consonants = 0;
 
-typedef struct node {
-    const u_int8_t* hash;
-    struct node *next;
+typedef struct node{
+  char* password;
+  struct node *next;
 } Node;
 
 typedef struct stack {
@@ -21,36 +23,60 @@ void create(Stack *s) {
     s->top = NULL;
 }
 
-void push(Stack *s, const u_int8_t hash) {
-    Node *new;
+void place(Stack *s, char*password){
+  int i = 0;
+  int vowels = 0;
+  int consonants = 0;
 
+  while(s[i] != '\0'){
+    if (s[c] == 'a'|| s[c] == 'e' || s[c] == 'i' || s[c] =='o' || s[c] == 'u' || s[c] == 'y'){
+      vowels++;
+    }
+    else{
+      consonants++;
+    }
+  }
+
+  if(vowels >= max_vowels){
+    push(s,password);
+  }
+
+}
+
+void push(Stack *s, char* password) {
+    Node *new;
     new = (Node *)malloc(sizeof(Node));
 
     if (new == NULL) {
         exit(1);
     }
 
-    new->hash = hash;
+    new->password = password;
     new->next = s->top;
     s->top = new;
-
     s->size++;
 }
 
-const u_int8_t pop(Stack *s) {
+char* pop(Stack *s) {
 
-    const u_int8_t hash;
+    char* password;
     Node *rmv;
 
-    //if (s->top == NULL) {
+    if (s->top == NULL) {
         //exit(1);
-    //}
+    }
 
     rmv = s->top;
-    hash = s->top->hash;
+    password = s->top->password;
     s->top = rmv->next;
     s->size--;
     free(rmv);
 
-    return hash; // return the value that was popped off the stack
+    return password;
+}
+
+void printAll(Stack*s){
+  while(s->top != NULL){
+    printf("%s\n", pop(s));
+  }
 }
