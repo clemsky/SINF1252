@@ -5,9 +5,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-int* max_vowels = 0;
-int* max_consonants = 0;
-
 typedef struct node{
   char* password;
   struct node *next;
@@ -16,11 +13,15 @@ typedef struct node{
 typedef struct stack {
     Node *top;
     int size;
+    int max_vowels;
+    int max_consonants;
 } Stack;
 
 void create(Stack *s) {
     s->size = 0;
     s->top = NULL;
+    s->max_vowels = 0;
+    s->max_consonants = 0;
 }
 
 void place(Stack *s, char*password){
@@ -37,10 +38,31 @@ void place(Stack *s, char*password){
     }
   }
 
-  if(vowels >= max_vowels){
-    push(s,password);
+  if (option == VOWELS){
+    if(vowels == max_vowels){
+      push(s,password);
+    }
+    else if(vowels < max_vowels){
+      free(password);
+    }
+    else if(vowels > max_vowels){
+      removeAll(s);
+      push(s,password);
+    }
   }
 
+  if (option == CONSONANTS){
+    if(consonants == max_consonants){
+      push(s,password);
+    }
+    else if(consonants < max_consonants){
+      free(password);
+    }
+    else if(consonants > max_consonants){
+      removeAll(s);
+      push(s,password);
+    }
+  }
 }
 
 void push(Stack *s, char* password) {
@@ -63,7 +85,7 @@ char* pop(Stack *s) {
     Node *rmv;
 
     if (s->top == NULL) {
-        exit(1);
+        exit(0);
     }
 
     rmv = s->top;
@@ -73,6 +95,12 @@ char* pop(Stack *s) {
     free(rmv);
 
     return password;
+}
+
+void removeAll(Stack *s){
+  while(s->top != NULL){
+    pop(s);
+  }
 }
 
 void printAll(Stack*s){
