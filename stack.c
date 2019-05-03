@@ -21,6 +21,7 @@ typedef struct stack {
 void create(Stack *s) {
     s->size = 0;
     s->top = NULL;
+    int a;
 }
 
 void place(Stack *s, char*password){
@@ -63,7 +64,7 @@ char* pop(Stack *s) {
     Node *rmv;
 
     if (s->top == NULL) {
-        //exit(1);
+        exit(1);
     }
 
     rmv = s->top;
