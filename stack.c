@@ -21,7 +21,6 @@ typedef struct stack {
 void create(Stack *s) {
     s->size = 0;
     s->top = NULL;
-    int a;
 }
 
 void place(Stack *s, char*password){
