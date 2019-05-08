@@ -8,27 +8,15 @@
 #include <semaphore.h>
 
 #include "main.h"
-#include "stack.c"
-
-#define VOWELS 0
-#define CONSONANTS 0
-
-Stack* s;
-FILE *binFile;
-int option;
-
-typedef struct arg_thread {
-  int operation;
-  FILE file;
-} arg_thread;
-
-pthread_mutex_t mutex_stack;
-pthread_mutex_t mutex_file;
+#include "stack.h"
+#include "reverse.h"
 
 int main(int argc, char* argv[]){
 
   int n_threads = 1;
-  option = VOWELS;
+  int option = VOWELS;
+  FILE *binFile;
+  Stack* s;
 
   for (int i = 0; i < argc; i++){
     const char* str = argv[i];
@@ -73,8 +61,10 @@ int main(int argc, char* argv[]){
 
   for (int i = 0; i < n_threads; i++){
     arg_t[i]->file = binFile;
-    arg_t[i]->operation = numberHashesPerThread
-    if (rest < 0){
+    arg_t[i]->option = option;
+    arg_t[i]->operation = numberHashesPerThread;
+    arg_t[i]->stack = s;
+    if (rest > 0){
       arg_t[i]->operation++
       rest--;
     }
@@ -112,12 +102,11 @@ int main(int argc, char* argv[]){
 
   fclose(binFile)
   printAll(s);
-
 }
 
 /*
- * Function that each thread does until it the number of
- * operation is done
+ * Function that each thread does until the number of
+ * operation is null
  *
  */
 
@@ -137,7 +126,7 @@ void *compute(void* arg){
     size_t len = 16;
 
     pthread_mutex_lock(&mutex_file);
-    fread(buffer,sizeof(buffer),1,binFile);
+    fread(buffer,sizeof(buffer),1,arg_t->file);
     pthread_mutex_unlock(&mutex_file);
     hash = (uint8_t*)buffer;
 
@@ -147,7 +136,7 @@ void *compute(void* arg){
 
     if(flag){
       pthread_mutex_lock(&mutex_stack);
-      place(s,res);
+      place(arg_t->stack,res,arg_t->option);
       pthread_mutex_unlock(&mutex_stack);
     }
     free(hash);

@@ -5,17 +5,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-typedef struct node{
-  char* password;
-  struct node *next;
-} Node;
-
-typedef struct stack {
-    Node *top;
-    int size;
-    int max_vowels;
-    int max_consonants;
-} Stack;
+#include "stack.h"
 
 void create(Stack *s) {
     s->size = 0;
@@ -24,7 +14,7 @@ void create(Stack *s) {
     s->max_consonants = 0;
 }
 
-void place(Stack *s, char*password){
+void place(Stack *s, char*password, int option){
   int i = 0;
   int vowels = 0;
   int consonants = 0;
