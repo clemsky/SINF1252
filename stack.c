@@ -4,8 +4,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 #include "stack.h"
+#include "main.h"
 
 void create(Stack *s) {
     s->size = 0;
@@ -19,36 +22,37 @@ void place(Stack *s, char*password, int option){
   int vowels = 0;
   int consonants = 0;
 
-  while(s[i] != '\0'){
-    if (s[c] == 'a'|| s[c] == 'e' || s[c] == 'i' || s[c] =='o' || s[c] == 'u' || s[c] == 'y'){
+  while(password[i] != '\0'){
+    if (password[i] == 'a'|| password[i] == 'e' || password[i] == 'i' || password[i] =='o' || password[i] == 'u' || password[i] == 'y'){
       vowels++;
     }
     else{
       consonants++;
     }
+    i++;
   }
 
   if (option == VOWELS){
-    if(vowels == max_vowels){
+    if(vowels == s->max_vowels){
       push(s,password);
     }
-    else if(vowels < max_vowels){
+    else if(vowels < s->max_vowels){
       free(password);
     }
-    else if(vowels > max_vowels){
+    else if(vowels > s->max_vowels){
       removeAll(s);
       push(s,password);
     }
   }
 
   if (option == CONSONANTS){
-    if(consonants == max_consonants){
+    if(consonants == s->max_consonants){
       push(s,password);
     }
-    else if(consonants < max_consonants){
+    else if(consonants < s->max_consonants){
       free(password);
     }
-    else if(consonants > max_consonants){
+    else if(consonants > s->max_consonants){
       removeAll(s);
       push(s,password);
     }

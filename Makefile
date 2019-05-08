@@ -9,6 +9,7 @@ cracker: stack.o main.o reverse.o sha256.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 main.o : reverse.h stack.h
+stack.o : main.h
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)

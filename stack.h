@@ -15,7 +15,7 @@ typedef struct stack {
 
 void create(Stack *s);
 
-void place(Stack *s, char*password);
+void place(Stack *s, char*password, int option);
 
 void push(Stack *s, char* password);
 

@@ -11,6 +11,8 @@
 #include "stack.h"
 #include "reverse.h"
 
+
+
 int main(int argc, char* argv[]){
 
   int n_threads = 1;
