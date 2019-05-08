@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#include "stack.h"
+
 #define VOWELS 0
 #define CONSONANTS 1
 

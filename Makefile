@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-W -Wall -ansi -pedantic -Werror
+CFLAGS=-W -Wall -Werror
 LDFLAGS=
 EXEC=cracker
 
