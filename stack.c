@@ -79,7 +79,7 @@ char* pop(Stack *s) {
     Node *rmv;
 
     if (s->top == NULL) {
-        exit(0);
+        exit(1);
     }
 
     rmv = s->top;

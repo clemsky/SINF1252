@@ -12,19 +12,17 @@
 #include "stack.h"
 #include "reverse.h"
 
-
-
 int main(int argc, char* argv[]){
 
   int n_threads = 1;
   int option = VOWELS;
-  FILE *binFile;
+  FILE *binFile = NULL;
   Stack* s;
 
   s = (Stack*)malloc(sizeof(Stack));
   if (s == NULL){
     perror("malloc failed");
-    exit(0);
+    exit(1);
   }
 
   for (int i = 0; i < argc; i++){
@@ -38,6 +36,11 @@ int main(int argc, char* argv[]){
     if (strstr(str,".bin") != NULL){
       binFile = fopen(str,"rb");
     }
+  }
+
+  if (binFile == NULL){
+    perror("Error : Opening file");
+    exit(1);
   }
 
   pthread_t thread[n_threads];
@@ -65,7 +68,7 @@ int main(int argc, char* argv[]){
   err = pthread_mutex_init(&mutex_file, NULL);
   if(err != 0){
     perror("mutex_init");
-    exit(0);
+    exit(1);
   }
 
   /* Setting arguments for threads */
@@ -85,10 +88,10 @@ int main(int argc, char* argv[]){
   /* Creating the threads */
 
   for (int i = 0; i < n_threads; i++){
-    err = pthread_create(&(thread[i]), NULL, &compute, (void*)(arg_t[i]));
+    err = pthread_create(&(thread[i]), NULL, &compute, (void*)arg_t[i]);
     if(err != 0){
       perror("pthread_create");
-      exit(0);
+      exit(1);
     }
   }
 
@@ -98,7 +101,7 @@ int main(int argc, char* argv[]){
     err = pthread_join(thread[i], NULL);
     if(err != 0){
       perror("pthread_join");
-      exit(0);
+      exit(1);
     }
   }
 
@@ -107,13 +110,13 @@ int main(int argc, char* argv[]){
   err = pthread_mutex_destroy(&mutex_stack);
   if(err != 0){
     perror("mutex_destroy");
-    exit(0);
+    exit(1);
   }
 
   err = pthread_mutex_destroy(&mutex_file);
   if(err != 0){
     perror("mutex_destroy");
-    exit(0);
+    exit(1);
   }
 
   fclose(binFile);
@@ -139,7 +142,7 @@ void *compute(void* arg){
     char* res;
     res = (char*)malloc(len*(sizeof(char)));
     if(res == NULL){
-      exit(0);
+      exit(1);
     }
 
 
