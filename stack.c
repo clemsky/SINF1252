@@ -18,10 +18,10 @@ void create(Stack *s) {
 }
 
 void place(Stack *s, char*password, int option){
-  int i = 0;
   int vowels = 0;
   int consonants = 0;
 
+  int i = 0;
   while(password[i] != '\0'){
     if (password[i] == 'a'|| password[i] == 'e' || password[i] == 'i' || password[i] =='o' || password[i] == 'u' || password[i] == 'y'){
       vowels++;
@@ -36,12 +36,10 @@ void place(Stack *s, char*password, int option){
     if(vowels == s->max_vowels){
       push(s,password);
     }
-    else if(vowels < s->max_vowels){
-      free(password);
-    }
     else if(vowels > s->max_vowels){
       removeAll(s);
       push(s,password);
+      s->max_vowels = vowels;
     }
   }
 
@@ -49,12 +47,10 @@ void place(Stack *s, char*password, int option){
     if(consonants == s->max_consonants){
       push(s,password);
     }
-    else if(consonants < s->max_consonants){
-      free(password);
-    }
     else if(consonants > s->max_consonants){
       removeAll(s);
       push(s,password);
+      s->max_consonants = consonants;
     }
   }
 }
@@ -95,10 +91,12 @@ void removeAll(Stack *s){
   while(s->top != NULL){
     pop(s);
   }
+  create(s);
 }
 
 void printAll(Stack*s){
   while(s->top != NULL){
     printf("%s\n", pop(s));
   }
+  free(s);
 }

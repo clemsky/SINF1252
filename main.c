@@ -6,7 +6,6 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <errno.h>
 
 #include "main.h"
 #include "stack.h"
@@ -14,16 +13,14 @@
 
 int main(int argc, char* argv[]){
 
+  int err;
   int n_threads = 1;
-  int option = VOWELS;
-  FILE *binFile = NULL;
-  Stack* s;
 
-  s = (Stack*)malloc(sizeof(Stack));
-  if (s == NULL){
-    perror("malloc failed");
-    exit(1);
-  }
+  FILE* binFile;
+  binFile = (FILE*)malloc(sizeof(FILE));
+  binFile = NULL;
+
+  int option = VOWELS;
 
   for (int i = 0; i < argc; i++){
     const char* str = argv[i];
@@ -37,122 +34,114 @@ int main(int argc, char* argv[]){
       binFile = fopen(str,"rb");
     }
   }
-
-  if (binFile == NULL){
-    perror("Error : Opening file");
-    exit(1);
+  if(binFile == NULL){
+    printf("Pas de file en argument\n");
+    exit(EXIT_FAILURE);
   }
+
+  Stack* s;
+  s = (Stack*)malloc(sizeof(Stack));
+  create(s);
 
   pthread_t thread[n_threads];
   arg_thread *arg_t[n_threads];
-  int err;
 
-  create(s);
-
-  fseek(binFile, 0, SEEK_END);
-  int size = ftell(binFile);
-  fseek(binFile, 0, SEEK_SET);
-
-  int numberHashes = size/32;
+  int numberHashes = 5;
   int numberHashesPerThread = numberHashes/n_threads;
   int rest = numberHashes % n_threads;
-
-  /* Initialising mutex */
 
   err = pthread_mutex_init(&mutex_stack, NULL);
   if(err != 0){
     perror("mutex_init");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
 
   err = pthread_mutex_init(&mutex_file, NULL);
   if(err != 0){
     perror("mutex_init");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
-  /* Setting arguments for threads */
-
   for (int i = 0; i < n_threads; i++){
+    arg_t[i]=(arg_thread*)malloc(sizeof(arg_thread));
+    if(arg_t[i] == NULL){
+      exit(EXIT_FAILURE);
+    }
 
     arg_t[i]->file = binFile;
     arg_t[i]->option = option;
     arg_t[i]->operation = numberHashesPerThread;
     arg_t[i]->stack = s;
+    arg_t[i]->number = i;
     if (rest > 0){
       arg_t[i]->operation++;
       rest--;
     }
   }
 
-  /* Creating the threads */
-
   for (int i = 0; i < n_threads; i++){
-    err = pthread_create(&(thread[i]), NULL, &compute, (void*)arg_t[i]);
+    err = pthread_create(&(thread[i]), NULL, &computing, (void*)arg_t[i]);
     if(err != 0){
       perror("pthread_create");
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
-
-  /* Joining the threads */
 
   for (int i = 0; i < n_threads; i++){
     err = pthread_join(thread[i], NULL);
     if(err != 0){
       perror("pthread_join");
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
-
-  /* Destroying mutex */
 
   err = pthread_mutex_destroy(&mutex_stack);
   if(err != 0){
     perror("mutex_destroy");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   err = pthread_mutex_destroy(&mutex_file);
   if(err != 0){
     perror("mutex_destroy");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
-  fclose(binFile);
+  printf("Les mots de passe candidats sont :\n");
   printAll(s);
+  fclose(binFile);
   return EXIT_SUCCESS;
 }
 
-/*
- * Function that each thread does until the number of
- * operation is null
- *
- */
-
-void *compute(void* arg){
-
+void* computing(void* arg){
   arg_thread* arg_t = (arg_thread*)arg;
   size_t len = 16;
 
   for(int i = 0; i < arg_t->operation; i++){
 
     char buffer[32];
-    const uint8_t hash[32];
+    uint8_t hash[32];
     char* res;
     res = (char*)malloc(len*(sizeof(char)));
     if(res == NULL){
       exit(1);
     }
 
-
     pthread_mutex_lock(&mutex_file);
+    printf("Thread %i : begin fread\n",arg_t->number);
     fread(buffer,sizeof(buffer),1,arg_t->file);
+    printf("Thread %i : end fread\n",arg_t->number);
     pthread_mutex_unlock(&mutex_file);
 
     /* Calling reversehash function */
 
+    for (int i =0; i<32; i++){
+      hash[i] = (uint8_t)buffer[i];
+    }
+
+    printf("Thread %i : begin revershash\n",arg_t->number);
     bool flag = reversehash(hash,res,len);
+    printf("Thread %i : end reversehash\n",arg_t->number);
 
     if(flag){
       pthread_mutex_lock(&mutex_stack);
@@ -160,7 +149,5 @@ void *compute(void* arg){
       pthread_mutex_unlock(&mutex_stack);
     }
   }
-  free(arg_t);
-  free(arg);
   return NULL;
 }

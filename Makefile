@@ -10,12 +10,13 @@ cracker: stack.o main.o reverse.o sha256.o
 
 main.o : reverse.h stack.h
 stack.o : main.h
+reverse.o : sha256.h
 
 %.o: %.c
 	$(CC) -pthread -o $@ -c $< $(CFLAGS)
 
-clean:
+erase:
 	rm -rf *.o
 
-mrproper: clean
+clean: erase
 	rm -rf $(EXEC)
