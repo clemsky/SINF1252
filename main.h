@@ -20,6 +20,7 @@ pthread_mutex_t mutex_file;
 
 typedef struct arg_thread {
   int operation;
+  int number;
   FILE *file;
   int option;
   Stack* stack;
@@ -27,6 +28,6 @@ typedef struct arg_thread {
 
 int main(int argc, char *argv[]);
 
-void *compute(void* arg);
+void* computing(void* arg);
 
 #endif
