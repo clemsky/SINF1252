@@ -14,12 +14,11 @@
 int main(int argc, char* argv[]){
 
   int err;
+  
   int n_threads = 1;
-
   FILE* binFile;
   binFile = (FILE*)malloc(sizeof(FILE));
   binFile = NULL;
-
   int option = VOWELS;
 
   for (int i = 0; i < argc; i++){
