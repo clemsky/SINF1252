@@ -100,3 +100,14 @@ void printAll(Stack*s){
   }
   free(s);
 }
+
+void printAllFile(Stack*s, char* fileName){
+  FILE* file;
+  file = fopen(fileName,"w");
+  while(s->top != NULL){
+    char* ptr = pop(s);
+    fwrite(ptr,1,sizeof(ptr),file);
+  }
+  fclose(file);
+  free(s);
+}

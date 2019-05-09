@@ -18,6 +18,8 @@ int main(int argc, char* argv[]){
   int n_threads = 1;
   int option = VOWELS;
   int numberFiles = 0;
+  int output = OUT_STANDARD;
+  char* outFile;
 
   for (int i = 0; i < argc; i++){
     const char* str = argv[i];
@@ -48,6 +50,10 @@ int main(int argc, char* argv[]){
     }
     if (strcmp(argv[i],"-c") == 0){
       option = CONSONANTS;
+    }
+    if (strcmp(argv[i],"-o") ==  0){
+      output = OUT_FILE;
+      outFile = argv[i+1];
     }
     if (strstr(str,".bin") != NULL){
       if (strlen(str) > 30){
@@ -142,7 +148,14 @@ int main(int argc, char* argv[]){
   }
 
   printf("Les mots de passe candidats sont :\n");
-  printAll(s);
+
+  if (output == OUT_FILE){
+    printAllFile(s,outFile);
+  }
+  else {
+    printAll(s);
+  }
+
   return EXIT_SUCCESS;
 }
 

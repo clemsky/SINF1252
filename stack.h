@@ -23,6 +23,8 @@ char* pop(Stack *s);
 
 void removeAll(Stack *s);
 
-void printAll(Stack*s);
+void printAll(Stack* s);
+
+void printAllFile(Stack* s, char* fileName);
 
 #endif

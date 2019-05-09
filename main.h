@@ -14,6 +14,8 @@
 
 #define VOWELS 0
 #define CONSONANTS 1
+#define OUT_STANDARD 0
+#define OUT_FILE 1
 
 pthread_mutex_t mutex_stack;
 pthread_mutex_t mutex_file;
