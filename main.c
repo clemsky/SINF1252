@@ -6,12 +6,15 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <time.h>
 
 #include "main.h"
 #include "stack.h"
 #include "reverse.h"
 
 int main(int argc, char* argv[]){
+
+  time_t begin = time(NULL);
 
   int err;
 
@@ -156,6 +159,8 @@ int main(int argc, char* argv[]){
     printAll(s);
   }
 
+  time_t end = time(NULL);
+  printf("Temps d'exécution pour %i threads : %ld secondes\n",n_threads,(end-begin));
   return EXIT_SUCCESS;
 }
 
