@@ -24,6 +24,8 @@ int main(int argc, char* argv[]){
   int output = OUT_STANDARD;
   char* outFile;
 
+  /*Calcule le nombre de fichier(numberFiles) à traiter
+   */
   for (int i = 0; i < argc; i++){
     const char* str = argv[i];
     if (strstr(str,".bin") != NULL){
@@ -36,10 +38,14 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
+  /*Alloue de la mémoire pour les fichiers à traiter
+   */
   FILE* binFile[numberFiles];
   for (int i = 0; i < numberFiles; i++){
     binFile[i] = (FILE*)malloc(sizeof(FILE));
   }
+  /*Alloue de la mémoire pour les noms des fichiers
+   */
   char* fileName[numberFiles];
   for (int i = 0; i < numberFiles; i++){
     fileName[i] = (char*)malloc(30*sizeof(char));
