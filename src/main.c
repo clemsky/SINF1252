@@ -111,6 +111,11 @@ int main(int argc, char* argv[]){
     int size = ftell(binFile[a]);
     rewind(binFile[a]);
 
+    if (size % 32 != 0){
+      printf("Mauvais fichier en entrée");
+      exit(EXIT_FAILURE);
+    }
+
     int *numberHashes;
     numberHashes = (int*)malloc(sizeof(int));
     *numberHashes= size/32;
