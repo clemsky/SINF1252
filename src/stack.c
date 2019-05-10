@@ -10,6 +10,11 @@
 #include "stack.h"
 #include "main.h"
 
+/*Initialisation d'une pile de mdp
+ *avec comme arguments la taille de la pile(size),
+ *le premier noeud de la pile(top),
+ *le nmbr max de voyelle/consonne(max_vowels/max_consonants)
+ */
 void create(Stack *s) {
     s->size = 0;
     s->top = NULL;
@@ -17,6 +22,15 @@ void create(Stack *s) {
     s->max_consonants = 0;
 }
 
+/*IN  : Une pile *s, un mdp *pswrd, une option(Voyelle ou Consonne)
+ *OUT : Modifie une pile.
+ *      Si le mdp passé en argument contient autant de option(voyelle ou consonne)
+ *      que les autres mdp de la pile, ajoute le mdp à la pile.
+ *      Si le mdp passé en argument contient plus de option(voyelle ou consonne)
+ *      que les autres mdp de la pile, nettoie la pile et place le mdp dedans.
+ *      Si le mdp passé en argument contient moins de option(voyelle ou consonne)
+ *      que les autres mdp de la pile, rien ne se passe.
+ */
 void place(Stack *s, char*password, int option){
   int vowels = 0;
   int consonants = 0;
@@ -55,6 +69,8 @@ void place(Stack *s, char*password, int option){
   }
 }
 
+/*Rajoute le mdp(password) au dessus de la pile(s)
+ */
 void push(Stack *s, char* password) {
     Node *new;
     new = (Node *)malloc(sizeof(Node));
@@ -68,7 +84,8 @@ void push(Stack *s, char* password) {
     s->top = new;
     s->size++;
 }
-
+/*Retourne l'élément top de la pile et le retire de la pile
+ */
 char* pop(Stack *s) {
 
     char* password;
@@ -87,6 +104,8 @@ char* pop(Stack *s) {
     return password;
 }
 
+/*Vide la pile s et en recréé une
+ */
 void removeAll(Stack *s){
   while(s->top != NULL){
     pop(s);
@@ -94,6 +113,8 @@ void removeAll(Stack *s){
   create(s);
 }
 
+/*Print tout les éléments d'une pile s
+ */
 void printAll(Stack*s){
   while(s->top != NULL){
     printf("%s\n", pop(s));
@@ -101,6 +122,9 @@ void printAll(Stack*s){
   free(s);
 }
 
+/*IN  : pile s, fichier (fileName)
+ *OUT : écrit le contenu de la pile s dans le fichier fileName
+ */
 void printAllFile(Stack*s, char* fileName){
   FILE* file;
   file = fopen(fileName,"w");

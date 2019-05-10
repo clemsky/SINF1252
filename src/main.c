@@ -24,6 +24,8 @@ int main(int argc, char* argv[]){
   int output = OUT_STANDARD;
   char* outFile;
 
+  /*Calcule le nombre de fichier(numberFiles) à traiter
+   */
   for (int i = 0; i < argc; i++){
     const char* str = argv[i];
     if (strstr(str,".bin") != NULL){
@@ -36,28 +38,44 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
+  /*Alloue de la mémoire pour les fichiers à traiter
+   */
   FILE* binFile[numberFiles];
   for (int i = 0; i < numberFiles; i++){
     binFile[i] = (FILE*)malloc(sizeof(FILE));
   }
+  /*Alloue de la mémoire pour les noms des fichiers
+   */
   char* fileName[numberFiles];
   for (int i = 0; i < numberFiles; i++){
     fileName[i] = (char*)malloc(30*sizeof(char));
   }
 
+  /*Lis les valeurs passées en argument
+   */
   int j = 0;
   for (int i = 0; i < argc; i++){
     const char* str = argv[i];
+
+    /*Vérifie le nombre de threads
+     */
     if (strcmp(argv[i],"-t") == 0){
       n_threads = atoi(argv[i+1]);
     }
+    /*Vérifie le mode voyelle/consonne
+     */
     if (strcmp(argv[i],"-c") == 0){
       option = CONSONANTS;
     }
+    /*Vérifie la sortie du programme
+     */
     if (strcmp(argv[i],"-o") ==  0){
       output = OUT_FILE;
       outFile = argv[i+1];
     }
+    /*Vérifie les noms des fichiers et les stocke dans
+     *fileName
+     */
     if (strstr(str,".bin") != NULL){
       if (strlen(str) > 30){
         printf("Nom de fichier trop long");
@@ -68,7 +86,8 @@ int main(int argc, char* argv[]){
     }
   }
 
-
+  /*Initialisation de la pile
+   */
   Stack* s;
   s = (Stack*)malloc(sizeof(Stack));
   create(s);
@@ -88,6 +107,9 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
+  /*Allocation de mémoire et initialisation pour
+   *les arguments des threads
+   */
   for (int i = 0; i < n_threads; i++){
     arg_t[i]=(arg_thread*)malloc(sizeof(arg_thread));
     if(arg_t[i] == NULL){
@@ -98,8 +120,12 @@ int main(int argc, char* argv[]){
     arg_t[i]->stack = s;
   }
 
+  /*Analyse des différents fichiers
+   */
   for (int a = 0; a < numberFiles; a++){
 
+    /*Ouverture du fichier a
+     */
     printf("Analyse du fichier %i\n",(a+1));
     binFile[a] = fopen(fileName[a],"rb");
     if(binFile[a] == NULL){
@@ -107,6 +133,8 @@ int main(int argc, char* argv[]){
       exit(EXIT_FAILURE);
     }
 
+    /*Vérification de la validité du fichier
+     */
     fseek(binFile[a], 0L, SEEK_END);
     int size = ftell(binFile[a]);
     rewind(binFile[a]);
@@ -116,15 +144,23 @@ int main(int argc, char* argv[]){
       exit(EXIT_FAILURE);
     }
 
+    /*Allocation de la mémoire pour le nombre de
+     *mot de passe à traiter
+     */
     int *numberHashes;
     numberHashes = (int*)malloc(sizeof(int));
     *numberHashes= size/32;
 
+    /*Initialisation du reste des valeurs des
+     *arguments des thread
+     */
     for (int i = 0; i < n_threads; i++){
       arg_t[i]->file = binFile[a];
       arg_t[i]->numberHashes = numberHashes;
     }
 
+    /*Lancement de compute pour chaque thread
+     */
     for (int i = 0; i < n_threads; i++){
       err = pthread_create(&(thread[i]), NULL, &compute, (void*)arg_t[i]);
       if(err != 0){
@@ -133,6 +169,8 @@ int main(int argc, char* argv[]){
       }
     }
 
+    /*Jonction des threads
+     */
     for (int i = 0; i < n_threads; i++){
       err = pthread_join(thread[i], NULL);
       if(err != 0){
@@ -140,6 +178,8 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
       }
     }
+    /*Fermeture du fichier
+     */
     fclose(binFile[a]);
   }
 
@@ -167,16 +207,25 @@ int main(int argc, char* argv[]){
     printf("Les mots de passe candidats sont imprimés sur le fichier %s\n",outFile);
     printAllFile(s,outFile);
   }
+
+  /*Pour le terminal
+   */
   else {
     printf("Les mots de passe candidats sont :\n");
     printAll(s);
   }
 
+  /*Calcul du temps d'exécution
+   */
   time_t end = time(NULL);
   printf("Temps d'exécution pour %i threads : %ld secondes\n",n_threads,(end-begin));
   return EXIT_SUCCESS;
 }
 
+/*Exécute le traitement des mots de passes contenus
+ *dans les fichiers passés en arguments et garde les candidats
+ *stockés dans les piles s
+ */
 void* compute(void* arg){
   arg_thread* arg_t = (arg_thread*)arg;
   size_t len = 16;
