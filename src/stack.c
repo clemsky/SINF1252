@@ -106,7 +106,9 @@ void printAllFile(Stack*s, char* fileName){
   file = fopen(fileName,"w");
   while(s->top != NULL){
     char* ptr = pop(s);
-    fwrite(ptr,1,sizeof(ptr),file);
+    fwrite(ptr,1,strlen(ptr),file);
+    char str[] = "\r\n";
+    fwrite(str,1,strlen(str),file);
   }
   fclose(file);
   free(s);

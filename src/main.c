@@ -155,12 +155,20 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
-  printf("Les mots de passe candidats sont :\n");
+  for (int i = 0; i < numberFiles; i++){
+    free(binFile[i]);
+  }
+
+  for (int i = 0; i < numberFiles; i++){
+    free(fileName[i]);
+  }
 
   if (output == OUT_FILE){
+    printf("Les mots de passe candidats sont imprimés sur le fichier %s\n",outFile);
     printAllFile(s,outFile);
   }
   else {
+    printf("Les mots de passe candidats sont :\n");
     printAll(s);
   }
 
@@ -185,12 +193,10 @@ void* compute(void* arg){
     }
 
     pthread_mutex_lock(&mutex_file);
-    printf("NumberHashes : %i\n",*(arg_t->numberHashes));
+    printf("Nombre de hash restant : %i\n",*(arg_t->numberHashes));
     if(*(arg_t->numberHashes) > 0){
       *(arg_t->numberHashes) = *(arg_t->numberHashes)-1;
-      printf("Thread %i : begin fread\n",arg_t->number);
       fread(buffer,sizeof(buffer),1,arg_t->file);
-      printf("Thread %i : end fread\n",arg_t->number);
       flag1 = true;
     }
     pthread_mutex_unlock(&mutex_file);
@@ -203,9 +209,9 @@ void* compute(void* arg){
       hash[i] = (uint8_t)buffer[i];
     }
 
-    printf("Thread %i : begin revershash\n",arg_t->number);
+    //printf("Thread %i : begin revershash\n",arg_t->number);
     bool flag2 = reversehash(hash,res,len);
-    printf("Thread %i : end reversehash\n",arg_t->number);
+    //printf("Thread %i : end reversehash\n",arg_t->number);
 
     if(flag2){
       pthread_mutex_lock(&mutex_stack);
