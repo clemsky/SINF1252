@@ -3,20 +3,23 @@ CFLAGS= -Wall -Werror
 LDFLAGS=
 EXEC=cracker
 
-all: $(EXEC)
+all : $(EXEC)
 
-cracker: stack.o main.o reverse.o sha256.o
+cracker: src/stack.o src/main.o src/reverse.o src/sha256.o
 	$(CC) -pthread -o $@ $^ $(LDFLAGS)
 
-main.o : reverse.h stack.h
-stack.o : main.h
-reverse.o : sha256.h
+main.o : src/reverse.h src/stack.h
+stack.o :src/ main.h
+reverse.o : src/sha256.h
 
 %.o: %.c
 	$(CC) -pthread -o $@ -c $< $(CFLAGS)
 
 erase:
-	rm -rf *.o
+	rm -rf src/main.o
+	rm -rf src/reverse.o
+	rm -rf src/sha256.o
+	rm -rf src/stack.o
 
 clean: erase
 	rm -rf $(EXEC)
