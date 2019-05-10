@@ -26,7 +26,8 @@ int main(int argc, char* argv[]){
 
   /*Calcule le nombre de fichier(numberFiles) à traiter
    */
-  for (int i = 0; i < argc; i++){
+  int i;
+  for (i = 0; i < argc; i++){
     const char* str = argv[i];
     if (strstr(str,".bin") != NULL){
       numberFiles++;
@@ -41,20 +42,20 @@ int main(int argc, char* argv[]){
   /*Alloue de la mémoire pour les fichiers à traiter
    */
   FILE* binFile[numberFiles];
-  for (int i = 0; i < numberFiles; i++){
+  for (i = 0; i < numberFiles; i++){
     binFile[i] = (FILE*)malloc(sizeof(FILE));
   }
   /*Alloue de la mémoire pour les noms des fichiers
    */
   char* fileName[numberFiles];
-  for (int i = 0; i < numberFiles; i++){
+  for (i = 0; i < numberFiles; i++){
     fileName[i] = (char*)malloc(30*sizeof(char));
   }
 
   /*Lis les valeurs passées en argument
    */
   int j = 0;
-  for (int i = 0; i < argc; i++){
+  for (i = 0; i < argc; i++){
     const char* str = argv[i];
 
     /*Vérifie le nombre de threads
@@ -110,7 +111,7 @@ int main(int argc, char* argv[]){
   /*Allocation de mémoire et initialisation pour
    *les arguments des threads
    */
-  for (int i = 0; i < n_threads; i++){
+  for (i = 0; i < n_threads; i++){
     arg_t[i]=(arg_thread*)malloc(sizeof(arg_thread));
     if(arg_t[i] == NULL){
       exit(EXIT_FAILURE);
@@ -122,9 +123,10 @@ int main(int argc, char* argv[]){
 
   /*Analyse des différents fichiers
    */
-  for (int a = 0; a < numberFiles; a++){
+  int a;
+  for (a = 0; a < numberFiles; a++){
 
-    /*Ouverture du fichier a
+    /*Ouverture du fichier à l'indice a
      */
     printf("Analyse du fichier %i\n",(a+1));
     binFile[a] = fopen(fileName[a],"rb");
@@ -154,14 +156,14 @@ int main(int argc, char* argv[]){
     /*Initialisation du reste des valeurs des
      *arguments des thread
      */
-    for (int i = 0; i < n_threads; i++){
+    for (i = 0; i < n_threads; i++){
       arg_t[i]->file = binFile[a];
       arg_t[i]->numberHashes = numberHashes;
     }
 
     /*Lancement de compute pour chaque thread
      */
-    for (int i = 0; i < n_threads; i++){
+    for (i = 0; i < n_threads; i++){
       err = pthread_create(&(thread[i]), NULL, &compute, (void*)arg_t[i]);
       if(err != 0){
         printf("Erreur initialisation thread");
@@ -171,7 +173,7 @@ int main(int argc, char* argv[]){
 
     /*Jonction des threads
      */
-    for (int i = 0; i < n_threads; i++){
+    for (i = 0; i < n_threads; i++){
       err = pthread_join(thread[i], NULL);
       if(err != 0){
         printf("Erreur jonction thread");
@@ -185,21 +187,21 @@ int main(int argc, char* argv[]){
 
   err = pthread_mutex_destroy(&mutex_stack);
   if(err != 0){
-    printf("Erreur dsetruction mutex");
+    printf("Erreur destruction mutex");
     exit(EXIT_FAILURE);
   }
 
   err = pthread_mutex_destroy(&mutex_file);
   if(err != 0){
-    printf("Erreur dsetruction mutex");
+    printf("Erreur destruction mutex");
     exit(EXIT_FAILURE);
   }
 
-  for (int i = 0; i < numberFiles; i++){
+  for (i = 0; i < numberFiles; i++){
     free(binFile[i]);
   }
 
-  for (int i = 0; i < numberFiles; i++){
+  for (i = 0; i < numberFiles; i++){
     free(fileName[i]);
   }
 
@@ -224,7 +226,7 @@ int main(int argc, char* argv[]){
 
 /*Exécute le traitement des mots de passes contenus
  *dans les fichiers passés en arguments et garde les candidats
- *stockés dans les piles s
+ *stockés dans la pile s
  */
 void* compute(void* arg){
   arg_thread* arg_t = (arg_thread*)arg;
@@ -241,6 +243,7 @@ void* compute(void* arg){
       exit(1);
     }
 
+    // Section critique
     pthread_mutex_lock(&mutex_file);
     printf("Thread %i : Nombre de hash restant : %i\n",arg_t->number,*(arg_t->numberHashes));
     if(*(arg_t->numberHashes) > 0){
@@ -249,23 +252,25 @@ void* compute(void* arg){
       flag1 = true;
     }
     pthread_mutex_unlock(&mutex_file);
+    // Fin de la section critique
 
     if(!flag1){
       break;
     }
 
-    for (int i =0; i<32; i++){
+    int i;
+    for (i =0; i<32; i++){
       hash[i] = (uint8_t)buffer[i];
     }
 
-    //printf("Thread %i : begin revershash\n",arg_t->number);
     bool flag2 = reversehash(hash,res,len);
-    //printf("Thread %i : end reversehash\n",arg_t->number);
 
     if(flag2){
+      // Section critique
       pthread_mutex_lock(&mutex_stack);
       place(arg_t->stack,res,arg_t->option);
       pthread_mutex_unlock(&mutex_stack);
+      // Fin de la section critique
     }
   }
   return NULL;
