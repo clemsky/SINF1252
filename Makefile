@@ -8,6 +8,12 @@ basic : $(EXEC)
 all : $(EXEC)
 	./cracker -t 3 test/1.bin test/2.bin
 	./cracker -t 3 -o output.txt test/2.bin
+	./cracker -t 3 faux.bin
+
+test : $(EXEC)
+	./cracker -t 3 test/1.bin test/2.bin
+	./cracker -t 3 -o output.txt test/2.bin
+	./cracker -t 3 faux.bin
 
 cracker: src/stack.o src/main.o src/reverse.o src/sha256.o
 	$(CC) -pthread -o $@ $^ $(LDFLAGS)

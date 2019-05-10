@@ -97,13 +97,13 @@ int main(int argc, char* argv[]){
 
   err = pthread_mutex_init(&mutex_stack, NULL);
   if(err != 0){
-    perror("mutex_init");
+    printf("Erreur initialisation mutex");
     exit(EXIT_FAILURE);
   }
 
   err = pthread_mutex_init(&mutex_file, NULL);
   if(err != 0){
-    perror("mutex_init");
+    printf("Erreur initialisation mutex");
     exit(EXIT_FAILURE);
   }
 
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]){
     for (int i = 0; i < n_threads; i++){
       err = pthread_create(&(thread[i]), NULL, &compute, (void*)arg_t[i]);
       if(err != 0){
-        perror("pthread_create");
+        printf("Erreur initialisation thread");
         exit(EXIT_FAILURE);
       }
     }
@@ -174,7 +174,7 @@ int main(int argc, char* argv[]){
     for (int i = 0; i < n_threads; i++){
       err = pthread_join(thread[i], NULL);
       if(err != 0){
-        perror("pthread_join");
+        printf("Erreur jonction thread");
         exit(EXIT_FAILURE);
       }
     }
@@ -185,13 +185,13 @@ int main(int argc, char* argv[]){
 
   err = pthread_mutex_destroy(&mutex_stack);
   if(err != 0){
-    perror("mutex_destroy");
+    printf("Erreur dsetruction mutex");
     exit(EXIT_FAILURE);
   }
 
   err = pthread_mutex_destroy(&mutex_file);
   if(err != 0){
-    perror("mutex_destroy");
+    printf("Erreur dsetruction mutex");
     exit(EXIT_FAILURE);
   }
 
@@ -242,7 +242,7 @@ void* compute(void* arg){
     }
 
     pthread_mutex_lock(&mutex_file);
-    printf("Nombre de hash restant : %i\n",*(arg_t->numberHashes));
+    printf("Thread %i : Nombre de hash restant : %i\n",arg_t->number,*(arg_t->numberHashes));
     if(*(arg_t->numberHashes) > 0){
       *(arg_t->numberHashes) = *(arg_t->numberHashes)-1;
       fread(buffer,sizeof(buffer),1,arg_t->file);
