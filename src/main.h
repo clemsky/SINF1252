@@ -20,6 +20,8 @@
 pthread_mutex_t mutex_stack;
 pthread_mutex_t mutex_file;
 
+/*Structure permettant de mettre plusieurs argument dans les threads
+ */
 typedef struct arg_thread {
   int number;
   int* numberHashes;
